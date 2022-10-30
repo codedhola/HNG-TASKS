@@ -9,7 +9,7 @@ const server = http.createServer((request, response) => {
             "age": 22,
             "bio": "Building from scratch"
         };
-        response.writeHead(200, { "statusMessage": "success", 'Content-Type': 'text/json'});
+        response.writeHead(200, { "statusMessage": "success", 'Content-Type': 'application/json'});
         response.end(JSON.stringify(hola));
     }else{
         response.writeHead(404, { "statusMessage": "failed", 'Content-Type': 'text/plain'});
