@@ -4,39 +4,87 @@ const PORT =  process.env.PORT || 8080
 
 function handleCalc(operation, intX, intY){
     let solve;
-    if(operation === "addition"){
+    
+    if(operation.match(/(addition|add|plus)/i)){
         solve = Number(intX) + Number(intY)
     }
-    if(operation === "subtraction"){
+    if(operation.match(/(subtraction|subtract|minus)/i)){
         solve = Number(intX) - Number(intY)
     }
-    if(operation === "multiplication"){
+    if(operation.match(/(multiplication|multiply|times)/i)){
         solve = Number(intX) * Number(intY)
     }
     return solve
 }
 
+function getOperator(operation){
+    let operator;
+    if(operation.match(/(addition|add|plus)/i)){
+        operator = "addition"
+    }
+    if(operation.match(/(subtraction|subtract|minus)/i)){
+        operator = "subtraction"
+    }
+    if(operation.match(/(multiplication|multiply|times)/i)){
+        operator = "multiplication"
+    }
+    return operator;
+}
+console.log(handleCalc("add", 20, 10))
+function handleValidation(val, res){
+    if(val.operation_type === undefined || val.operation_type === ""){
+        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+    
+        .end(JSON.stringify({
+            error: "Operating_type requred"
+        }))
+    }
+
+    if(val.x === undefined || val.x === "" || typeof(val.x) != "number"){
+        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+    
+        .end(JSON.stringify({
+            error: "x integer is requre d and must be a valid int type"
+        }))
+    }
+
+    if(val.y === undefined || val.y === "" || typeof(val.y) !== "number"){
+        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+    
+        .end(JSON.stringify({
+            error: "y integer is requred and must be a valid int type"
+        }))
+    }
+}
 
 function inputData(req, res){
     let data = "";
     let result, operator;
-    req.on("data", (chunk) => {
-        data += chunk.toString()
-        const objData = JSON.parse(data);
-        const { operation_type: operationType, x: intX, y: intY } = objData;
-        operator = operationType;
-        result = handleCalc(operationType, intX, intY)
-    })
-    req.on("end", () => {
-    data = JSON.parse(data)
-    res.writeHead(200, { "statusMessage": "success", 'Content-Type': 'application/json'})
-    
-    res.end(JSON.stringify({
-        slackUsername: "coded hola", 
-        result: Number(result),
-        operation_type: operator
-    }))
-    })
+    try {
+
+        req.on("data", (chunk) => {
+            data += chunk.toString()
+            const objData = JSON.parse(data);
+            handleValidation(objData, res)
+            const { operation_type: operationType, x: intX, y: intY } = objData;
+            result = handleCalc(operationType, intX, intY)
+            operator = getOperator(operationType);
+            console.log(operator)
+        })
+        req.on("end", () => {
+        data = JSON.parse(data)
+        res.writeHead(200, { "statusMessage": "success", 'Content-Type': 'application/json'})
+        
+        res.end(JSON.stringify({
+            slackUsername: "coded hola", 
+            result: Number(result),
+            operation_type: operator
+        }))
+        })
+    }catch(err){
+        console.log(err)
+        
+    }
 }
 
 
