@@ -5,13 +5,13 @@ const PORT =  process.env.PORT || 8080
 function handleCalc(operation, intX, intY){
     let solve;
     
-    if(operation.match(/(addition|add|plus)/i)){
+    if(operation.match(/(addition|add|plus|\+)/i)){
         solve = Number(intX) + Number(intY)
     }
-    if(operation.match(/(subtraction|subtract|minus)/i)){
+    if(operation.match(/(subtraction|subtract|minus|\-)/i)){
         solve = Number(intX) - Number(intY)
     }
-    if(operation.match(/(multiplication|multiply|times)/i)){
+    if(operation.match(/(multiplication|multiply|times|product|\*)/i)){
         solve = Number(intX) * Number(intY)
     }
     return solve
@@ -19,21 +19,21 @@ function handleCalc(operation, intX, intY){
 
 function getOperator(operation){
     let operator;
-    if(operation.match(/(addition|add|plus)/i)){
+    if(operation.match(/(addition|add|plus|\+)/i)){
         operator = "addition"
     }
-    if(operation.match(/(subtraction|subtract|minus)/i)){
+    if(operation.match(/(subtraction|subtract|minus|\+)/i)){
         operator = "subtraction"
     }
-    if(operation.match(/(multiplication|multiply|times)/i)){
+    if(operation.match(/(multiplication|multiply|times|product|\*)/i)){
         operator = "multiplication"
     }
     return operator;
 }
-console.log(handleCalc("add", 20, 10))
+
 function handleValidation(val, res){
     if(val.operation_type === undefined || val.operation_type === ""){
-        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+        return res.writeHead(400, { "statusMessage": "failed", 'Content-Type': 'application/json'})
     
         .end(JSON.stringify({
             error: "Operating_type requred"
@@ -41,7 +41,7 @@ function handleValidation(val, res){
     }
 
     if(val.x === undefined || val.x === "" || typeof(val.x) != "number"){
-        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+        return res.writeHead(400, { "statusMessage": "failed", 'Content-Type': 'application/json'})
     
         .end(JSON.stringify({
             error: "x integer is requre d and must be a valid int type"
@@ -49,7 +49,7 @@ function handleValidation(val, res){
     }
 
     if(val.y === undefined || val.y === "" || typeof(val.y) !== "number"){
-        return res.writeHead(200, { "statusMessage": "failed", 'Content-Type': 'application/json'})
+        return res.writeHead(400, { "statusMessage": "failed", 'Content-Type': 'application/json'})
     
         .end(JSON.stringify({
             error: "y integer is requred and must be a valid int type"
